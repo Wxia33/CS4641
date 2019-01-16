@@ -5,6 +5,7 @@ from sklearn import tree
 
 data = './data/MNIST/'
 
+# data obtained from https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv
 test = data + 'mnist_test.csv'
 train = data + 'mnist_train.csv'
 
@@ -13,14 +14,16 @@ decision_test = pd.read_csv(test)
 
 decisionTree = tree.DecisionTreeClassifier()
 
-trainLabel = train.label
-train = train.drop('label',1)
+trainLabel = decision_train.label
+trained = decision_train.drop('label',1)
 
-decisionTree.fit(train,trainLabel)
+decision_test = decision_test.drop('label',1)
 
-predictResult = decisionTree.predict(test)
+decisionTree.fit(trained,trainLabel)
 
-resultsPredict = pd.DataFrame(data=dt, columns=['label'])
-resultsPredict['ImageId'] = list(range(1,len(test)+1))
+predictResult = decisionTree.predict(decision_test)
+
+resultsPredict = pd.DataFrame(data=predictResult, columns=['label'])
+resultsPredict['ImageId'] = list(range(1,len(decision_test)+1))
 
 resultsPredict.to_csv('mnist_dt.csv',index = False)
