@@ -17,6 +17,7 @@ decisionTree = tree.DecisionTreeClassifier()
 trainLabel = decision_train.label
 trained = decision_train.drop('label',1)
 
+decision_label = decision_test.label
 decision_test = decision_test.drop('label',1)
 
 decisionTree.fit(trained,trainLabel)
