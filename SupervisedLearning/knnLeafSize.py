@@ -15,10 +15,14 @@ mnist_test = pd.read_csv(testMnist)
 
 trainLabel = mnist_train.label
 trained = mnist_train.drop('label',1)
+X_train, X_test, y_train, y_test = model_selection.train_test_split(trained, trainLabel, test_size = 30000, random_state = 42)
+trainLabel = y_train
+trained = X_train
 
 mnist_label = mnist_test.label
 mnist_test = mnist_test.drop('label',1)
 
+leafSize_list = []
 fold_size_list = []
 time_train_list = []
 predict_train_list = []
@@ -26,14 +30,14 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-for i in range(0,10):
+for i in range(0,8):
     print '----------------------------------------------------------------'
-    print 'TESTING SIZE: ', 0.3
+    print 'FOLD COUNT: ', 6
 
-    n_nb = 1 + 3 * i
-    knnClass = KNeighborsClassifier(n_neighbors = n_nb)
+    n_leaf = 2 + 7 * i
+    knnClass = KNeighborsClassifier(leaf_size = n_leaf)
 
-    print 'Number of Neighbors: ', n_nb
+    print 'Leaf Size: ', n_leaf
 
     cvEst = cross_validate(knnClass, trained, trainLabel, cv = 6, return_train_score = True)
 
@@ -44,28 +48,28 @@ for i in range(0,10):
     print 'Training Score', cvEst['train_score']
     print 'Testing Score', cvEst['test_score']
 
+    leafSize_list.append(n_leaf)
     fold_size_list.append(6)
-    time_train_list.append(cvEst['fit_time'])
-    predict_train_list.append(cvEst['score_time'])
+    time_train_list.append(np.average(cvEst['fit_time']))
+    predict_train_list.append(np.average(cvEst['score_time']))
     train_score_list.append(np.average(cvEst['train_score']))
     val_score_list.append(np.average(cvEst['test_score']))
 
-    '''
-    correct = 0
-    total = 0
-    for i,j in zip(knnPredictResult,mnist_label):
-        if i == j:
-            correct += 1.0
-        total += 1.0
+outDat = {
+    'Leaf Size': nNeighbor_list,
+    '# of Folds': fold_size_list,
+    'Time to Train KNN': time_train_list,
+    'Time to Predict with KNN': predict_train_list,
+    'Training Accuracy': train_score_list,
+    'Validation Accuracy': val_score_list
+}
 
-    print 'Accuracy', correct / total
+finalReport = pd.DataFrame(outDat, columns = [
+                'Leaf Size',
+                '# of Folds',
+                'Time to Train KNN',
+                'Time to Predict with KNN',
+                'Training Accuracy',
+                'Validation Accuracy'])
 
-    accuracy_list.append(correct / total)
-    '''
-
-finalReport = pd.DataFrame(data = train_size_list, columns=['Training Size'])
-finalReport['Time to Train KNN'] = time_train_list
-finalReport['Time to Predict with KNN'] = predict_train_list
-finalReport['Accuracy'] = accuracy_list
-
-finalReport.to_csv('./knnReport_MNIST.csv',index=False)
+finalReport.to_csv('./knnReport_LeafSize_MNIST.csv',index=False)
