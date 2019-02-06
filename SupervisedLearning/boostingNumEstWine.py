@@ -7,25 +7,17 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn import model_selection
 from sklearn.model_selection import cross_validate
 
-data = './data/MNIST/'
+data = './data/'
 
-# data obtained from https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv
-testMnist = data + 'mnist_test.csv'
-trainMnist = data + 'mnist_train.csv'
+# data obtained from https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/
+train = data + 'wineQualityTrain.csv'
 
-mnist_train = pd.read_csv(trainMnist)
-mnist_test = pd.read_csv(testMnist)
+boost_train = pd.read_csv(train)
 
-trainLabel = mnist_train.label
-trained = mnist_train.drop('label',1)
-X_train, X_test, y_train, y_test = model_selection.train_test_split(trained, trainLabel, test_size = 30000, random_state = 42)
-trainLabel = y_train
-trained = X_train
+trainLabel = boost_train['11']
+trained = boost_train.drop('11',1)
 
-mnist_label = mnist_test.label
-mnist_test = mnist_test.drop('label',1)
-
-lRate_list = []
+est_list = []
 fold_size_list = []
 time_train_list = []
 predict_train_list = []
@@ -37,10 +29,10 @@ for i in range(0,9):
     print '----------------------------------------------------------------'
     print 'FOLD COUNT: ', 6
 
-    lRate = 0.6 + 0.1 * i
-    adaBoost = AdaBoostClassifier(learning_rate = lRate)
+    n_est = 1 + 10 * i
+    adaBoost = AdaBoostClassifier(n_estimators = n_est)
 
-    print 'Coefficient of Polynomial Kernel Function: ', lRate
+    print 'Coefficient of Polynomial Kernel Function: ', n_est
 
     cvEst = cross_validate(adaBoost, trained, trainLabel, cv = 6, return_train_score = True)
 
@@ -51,7 +43,7 @@ for i in range(0,9):
     print 'Training Score', cvEst['train_score']
     print 'Testing Score', cvEst['test_score']
 
-    lRate_list.append(lRate)
+    est_list.append(n_est)
     fold_size_list.append(6)
     time_train_list.append(np.average(cvEst['fit_time']))
     predict_train_list.append(np.average(cvEst['score_time']))
@@ -59,7 +51,7 @@ for i in range(0,9):
     val_score_list.append(np.average(cvEst['test_score']))
 
 outDat = {
-    'Learning Rate': lRate_list,
+    'Number of Estimators': est_list,
     '# of Folds': fold_size_list,
     'Time to Train Boost': time_train_list,
     'Time to Predict with Boost': predict_train_list,
@@ -68,11 +60,11 @@ outDat = {
 }
 
 finalReport = pd.DataFrame(outDat, columns = [
-                'Learning Rate',
+                'Number of Estimators',
                 '# of Folds',
                 'Time to Train Boost',
                 'Time to Predict with Boost',
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./boostingReport_lRate_MNIST.csv',index=False)
+finalReport.to_csv('./reports/wine/boostingReport_NEstim_Wine.csv',index=False)

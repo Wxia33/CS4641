@@ -7,23 +7,15 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn import model_selection
 from sklearn.model_selection import cross_validate
 
-data = './data/MNIST/'
+data = './data/'
 
-# data obtained from https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv
-testMnist = data + 'mnist_test.csv'
-trainMnist = data + 'mnist_train.csv'
+# data obtained from https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/
+train = data + 'wineQualityTrain.csv'
 
-mnist_train = pd.read_csv(trainMnist)
-mnist_test = pd.read_csv(testMnist)
+boost_train = pd.read_csv(train)
 
-trainLabel = mnist_train.label
-trained = mnist_train.drop('label',1)
-X_train, X_test, y_train, y_test = model_selection.train_test_split(trained, trainLabel, test_size = 30000, random_state = 42)
-trainLabel = y_train
-trained = X_train
-
-mnist_label = mnist_test.label
-mnist_test = mnist_test.drop('label',1)
+trainLabel = boost_train['11']
+trained = boost_train.drop('11',1)
 
 lRate_list = []
 fold_size_list = []
@@ -75,4 +67,4 @@ finalReport = pd.DataFrame(outDat, columns = [
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./boostingReport_lRate_MNIST.csv',index=False)
+finalReport.to_csv('./reports/wine/boostingReport_lRate_Wine.csv',index=False)

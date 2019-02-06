@@ -1,10 +1,8 @@
 import time
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import cross_val_score
-from sklearn.datasets import load_iris
-from sklearn.ensemble import AdaBoostClassifier
 from sklearn import model_selection
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_validate
 
 data = './data/MNIST/'
@@ -25,7 +23,7 @@ trained = X_train
 mnist_label = mnist_test.label
 mnist_test = mnist_test.drop('label',1)
 
-lRate_list = []
+alg_list = []
 fold_size_list = []
 time_train_list = []
 predict_train_list = []
@@ -33,25 +31,25 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-for i in range(0,9):
+for i in range(0,3):
     print '----------------------------------------------------------------'
     print 'FOLD COUNT: ', 6
 
-    lRate = 0.6 + 0.1 * i
-    adaBoost = AdaBoostClassifier(learning_rate = lRate)
+    algm = ['ball_tree', 'kd_tree', 'brute']
+    knnClass = KNeighborsClassifier(algorithm = algm[i])
 
-    print 'Coefficient of Polynomial Kernel Function: ', lRate
+    print 'Algorithm: ', algm[i]
 
-    cvEst = cross_validate(adaBoost, trained, trainLabel, cv = 6, return_train_score = True)
+    cvEst = cross_validate(knnClass, trained, trainLabel, cv = 6, return_train_score = True)
 
-    print 'Time to train Adaboost', cvEst['fit_time']
+    print 'Time to train KNN', cvEst['fit_time']
 
-    print 'Time to Predict with Adaboost', cvEst['score_time']
+    print 'Time to Predict with KNN', cvEst['score_time']
 
     print 'Training Score', cvEst['train_score']
     print 'Testing Score', cvEst['test_score']
 
-    lRate_list.append(lRate)
+    alg_list.append(algm[i])
     fold_size_list.append(6)
     time_train_list.append(np.average(cvEst['fit_time']))
     predict_train_list.append(np.average(cvEst['score_time']))
@@ -59,20 +57,20 @@ for i in range(0,9):
     val_score_list.append(np.average(cvEst['test_score']))
 
 outDat = {
-    'Learning Rate': lRate_list,
-    '# of Folds': fold_size_list,
-    'Time to Train Boost': time_train_list,
-    'Time to Predict with Boost': predict_train_list,
+    'Leaf Size': nNeighbor_list,
+    'Algorithm': alg_list,
+    'Time to Train KNN': time_train_list,
+    'Time to Predict with KNN': predict_train_list,
     'Training Accuracy': train_score_list,
     'Validation Accuracy': val_score_list
 }
 
 finalReport = pd.DataFrame(outDat, columns = [
-                'Learning Rate',
+                'Leaf Size',
                 '# of Folds',
-                'Time to Train Boost',
-                'Time to Predict with Boost',
+                'Time to Train KNN',
+                'Time to Predict with KNN',
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./boostingReport_lRate_MNIST.csv',index=False)
+finalReport.to_csv('./knnReport_Algorithm_MNIST.csv',index=False)

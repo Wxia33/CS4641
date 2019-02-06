@@ -1,29 +1,21 @@
-import pandas as pd
 import time
-from sklearn import model_selection
+import numpy as np
+import pandas as pd
 from sklearn import svm
+from sklearn import model_selection
+from sklearn.model_selection import cross_validate
 
-# Code from https://scikit-learn.org/stable/modules/svm.html
+data = './data/'
 
-data = './data/MNIST/'
+# data obtained from https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/
+train = data + 'wineQualityTrain.csv'
 
-# data obtained from https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv
-testMnist = data + 'mnist_test.csv'
-trainMnist = data + 'mnist_train.csv'
+svm_train = pd.read_csv(train)
 
-mnist_train = pd.read_csv(trainMnist)
-mnist_test = pd.read_csv(testMnist)
+trainLabel = svm_train['11']
+trained = svm_train.drop('11',1)
 
-trainLabel = mnist_train.label
-trained = mnist_train.drop('label',1)
-X_train, X_test, y_train, y_test = model_selection.train_test_split(trained, trainLabel, test_size = 30000, random_state = 42)
-trainLabel = y_train
-trained = X_train
-
-mnist_label = mnist_test.label
-mnist_test = mnist_test.drop('label',1)
-
-degree_list = []
+kern_list = []
 fold_size_list = []
 time_train_list = []
 predict_train_list = []
@@ -31,14 +23,15 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-for i in range(1,9):
+for i in range(0,4):
     print '----------------------------------------------------------------'
     print 'FOLD COUNT: ', 6
 
-    deg = i
-    svm_class = svm.SVC(kernel = 'linear', degree = deg)
+    kern = ['linear','poly','rbf','sigmoid']
 
-    print 'Degree of Polynomial Kernel Function: ', deg
+    svm_class = svm.SVC(kernel = kern[i])
+
+    print 'Kernel Function: ', kern[i]
 
     cvEst = cross_validate(svm_class, trained, trainLabel, cv = 6, return_train_score = True)
 
@@ -49,7 +42,7 @@ for i in range(1,9):
     print 'Training Score', cvEst['train_score']
     print 'Testing Score', cvEst['test_score']
 
-    degree_list.append(deg)
+    kern_list.append(coef)
     fold_size_list.append(6)
     time_train_list.append(np.average(cvEst['fit_time']))
     predict_train_list.append(np.average(cvEst['score_time']))
@@ -57,7 +50,7 @@ for i in range(1,9):
     val_score_list.append(np.average(cvEst['test_score']))
 
 outDat = {
-    'Degree of Polynomial Kernel Function': degree_list,
+    'Kernel Function': kern_list,
     '# of Folds': fold_size_list,
     'Time to Train SVM': time_train_list,
     'Time to Predict with SVM': predict_train_list,
@@ -66,11 +59,11 @@ outDat = {
 }
 
 finalReport = pd.DataFrame(outDat, columns = [
-                'Degree of Polynomial Kernel Function',
+                'Kernel Function',
                 '# of Folds',
                 'Time to Train SVM',
                 'Time to Predict with SVM',
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./svmReport_DegreePoly_MNIST.csv',index=False)
+finalReport.to_csv('./reports/wine/svmReport_DegreePoly_Wine.csv',index=False)

@@ -36,7 +36,7 @@ for i in range(0,10):
     print 'FOLD COUNT: ', 6
 
     coef = -4 + 1 * i
-    svm_class = svm.SVC(kernel = 'poly', coef0 = coef)
+    svm_class = svm.SVC(kernel = 'linear', coef0 = coef)
 
     print 'Coefficient of Polynomial Kernel Function: ', coef
 
