@@ -1,9 +1,7 @@
-import time
-import numpy as np
 import pandas as pd
-from sklearn import svm
+import time
 from sklearn import model_selection
-from sklearn.model_selection import cross_validate
+from sklearn import svm
 
 data = './data/'
 
@@ -15,7 +13,7 @@ svm_train = pd.read_csv(train)
 trainLabel = svm_train['11']
 trained = svm_train.drop('11',1)
 
-kern_list = []
+degree_list = []
 fold_size_list = []
 time_train_list = []
 predict_train_list = []
@@ -23,15 +21,14 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-for i in range(0,4):
+for i in range(1,9):
     print '----------------------------------------------------------------'
     print 'FOLD COUNT: ', 6
 
-    kern = ['linear','poly','rbf','sigmoid']
+    deg = i
+    svm_class = svm.SVC(kernel = 'poly', degree = deg)
 
-    svm_class = svm.SVC(kernel = kern[i])
-
-    print 'Kernel Function: ', kern[i]
+    print 'Degree of Polynomial Kernel Function: ', deg
 
     cvEst = cross_validate(svm_class, trained, trainLabel, cv = 6, return_train_score = True)
 
@@ -42,7 +39,7 @@ for i in range(0,4):
     print 'Training Score', cvEst['train_score']
     print 'Testing Score', cvEst['test_score']
 
-    kern_list.append(kern[i])
+    degree_list.append(deg)
     fold_size_list.append(6)
     time_train_list.append(np.average(cvEst['fit_time']))
     predict_train_list.append(np.average(cvEst['score_time']))
@@ -50,7 +47,7 @@ for i in range(0,4):
     val_score_list.append(np.average(cvEst['test_score']))
 
 outDat = {
-    'Kernel Function': kern_list,
+    'Degree of Polynomial Kernel Function': degree_list,
     '# of Folds': fold_size_list,
     'Time to Train SVM': time_train_list,
     'Time to Predict with SVM': predict_train_list,
@@ -59,11 +56,11 @@ outDat = {
 }
 
 finalReport = pd.DataFrame(outDat, columns = [
-                'Kernel Function',
+                'Degree of Polynomial Kernel Function',
                 '# of Folds',
                 'Time to Train SVM',
                 'Time to Predict with SVM',
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./reports/wine/svmReport_Kernel_Wine.csv',index=False)
+finalReport.to_csv('./reports/wine/svmReport_DegreePoly_Wine.csv',index=False)

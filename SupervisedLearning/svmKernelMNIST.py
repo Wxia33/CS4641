@@ -66,4 +66,4 @@ finalReport = pd.DataFrame(outDat, columns = [
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./reports/wine/svmReport_DegreePoly_MNIST.csv',index=False)
+finalReport.to_csv('./reports/wine/svmReport_Kernel_MNIST.csv',index=False)

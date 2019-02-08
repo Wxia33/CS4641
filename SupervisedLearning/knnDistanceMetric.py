@@ -31,14 +31,14 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-for i in range(0,3):
+for i in range(0,7):
     print '----------------------------------------------------------------'
     print 'FOLD COUNT: ', 6
 
-    algm = ['ball_tree', 'kd_tree', 'brute']
-    knnClass = KNeighborsClassifier(algorithm = algm[i])
+    algm = ['euclidean', 'manhattan', 'chebyshev', 'minkowski', 'wminkowski', 'seuclidean','mahalanobis']
+    knnClass = KNeighborsClassifier(metric = algm[i])
 
-    print 'Algorithm: ', algm[i]
+    print 'Distance Metric: ', algm[i]
 
     cvEst = cross_validate(knnClass, trained, trainLabel, cv = 6, return_train_score = True)
 
@@ -57,7 +57,7 @@ for i in range(0,3):
     val_score_list.append(np.average(cvEst['test_score']))
 
 outDat = {
-    'Algorithm': alg_list,
+    'Distance Metric': alg_list,
     '# of Folds': fold_size_list,
     'Time to Train KNN': time_train_list,
     'Time to Predict with KNN': predict_train_list,
@@ -66,11 +66,11 @@ outDat = {
 }
 
 finalReport = pd.DataFrame(outDat, columns = [
-                'Algorithm',
+                'Distance Metric',
                 '# of Folds',
                 'Time to Train KNN',
                 'Time to Predict with KNN',
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./knnReport_Algorithm_MNIST.csv',index=False)
+finalReport.to_csv('./knnReport_DistMetric_MNIST.csv',index=False)
