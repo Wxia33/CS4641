@@ -1,12 +1,13 @@
 import time
 import pandas as pd
+import numpy as np
 from sklearn.neural_network import MLPClassifier
 
-data = './data/MNIST/'
+data = './data/'
 
 # data obtained from https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv
-testMnist = data + 'mnist_test.csv'
-trainMnist = data + 'mnist_train.csv'
+testMnist = data + 'wineQualityTest.csv'
+trainMnist = data + 'wineQualityTrain.csv'
 
 mnist_train = pd.read_csv(trainMnist)
 mnist_test = pd.read_csv(testMnist)
@@ -25,19 +26,19 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-hLayerTup = (,)
+hLayerTup = ()
 
-for i in range(0,8):
+for i in range(0,200):
     print '----------------------------------------------------------------'
     print 'FOLD COUNT: ', 6
 
-    hLayerTup += (100,)
+    hLayerTup += (10,)
 
     nn_mlp = MLPClassifier(solver='lbfgs', hidden_layer_sizes = hLayerTup)
 
     print 'Depth of Hidden Layer: ', len(hLayerTup)
 
-    cvEst = cross_validate(nn_mlp, trained, trainLabel, cv = 6, return_train_score = True)
+    cvEst = cross_validate(nn_mlp, trained, trainLabel, cv = 1, return_train_score = True)
 
     print 'Time to train NN', cvEst['fit_time']
 
@@ -70,4 +71,4 @@ finalReport = pd.DataFrame(outDat, columns = [
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./nnReport_hLayerDepth_MNIST.csv',index=False)
+finalReport.to_csv('./nnReport_hLayerDepth_Wine.csv',index=False)

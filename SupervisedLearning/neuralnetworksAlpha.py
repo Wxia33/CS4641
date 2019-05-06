@@ -1,5 +1,8 @@
 import time
 import pandas as pd
+import numpy as np
+from sklearn import model_selection
+from sklearn.model_selection import cross_validate
 from sklearn.neural_network import MLPClassifier
 
 data = './data/MNIST/'
@@ -25,16 +28,16 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-for i in range(0,9):
+for i in range(0,7):
     print '----------------------------------------------------------------'
-    print 'FOLD COUNT: ', 6
+    print 'FOLD COUNT: ', 5
 
-    alph = 1 * 10 ** - (5 + 0.1 * i)
+    alph = 1 * 10 ** - (8 - 1 * i)
     nn_mlp = MLPClassifier(solver='lbfgs', alpha= alph)
 
     print 'Alpha: ', alph
 
-    cvEst = cross_validate(nn_mlp, trained, trainLabel, cv = 6, return_train_score = True)
+    cvEst = cross_validate(nn_mlp, trained, trainLabel, cv = 5, return_train_score = True)
 
     print 'Time to train NN', cvEst['fit_time']
 
@@ -67,4 +70,4 @@ finalReport = pd.DataFrame(outDat, columns = [
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./nnReport_alph_MNIST.csv',index=False)
+finalReport.to_csv('./reports/nnReport_alph_MNIST2.csv',index=False)

@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn import svm
 from sklearn import model_selection
 from sklearn.model_selection import cross_validate
+from sklearn.preprocessing import MinMaxScaler
 
 data = './data/MNIST/'
 
@@ -15,6 +16,8 @@ svm_train = pd.read_csv(train)
 trainLabel = svm_train.label
 trained = svm_train.drop('label',1)
 
+trained = MinMaxScaler().fit_transform(trained)
+
 kern_list = []
 fold_size_list = []
 time_train_list = []
@@ -25,15 +28,15 @@ val_score_list = []
 
 for i in range(0,4):
     print '----------------------------------------------------------------'
-    print 'FOLD COUNT: ', 6
+    print 'FOLD COUNT: ', 5
 
     kern = ['linear','poly','rbf','sigmoid']
 
-    svm_class = svm.SVC(kernel = kern[i])
+    svm_class = svm.SVC(kernel = kern[i], cache_size = 1000)
 
     print 'Kernel Function: ', kern[i]
 
-    cvEst = cross_validate(svm_class, trained, trainLabel, cv = 6, return_train_score = True)
+    cvEst = cross_validate(svm_class, trained, trainLabel, cv = 5, return_train_score = True)
 
     print 'Time to train SVM', cvEst['fit_time']
 

@@ -8,20 +8,12 @@ from sklearn.model_selection import cross_validate
 data = './data/MNIST/'
 
 # data obtained from https://www.kaggle.com/oddrationale/mnist-in-csv#mnist_test.csv
-testMnist = data + 'mnist_test.csv'
-trainMnist = data + 'mnist_train.csv'
+train = data + 'mnist_train.csv'
 
-mnist_train = pd.read_csv(trainMnist)
-mnist_test = pd.read_csv(testMnist)
+svm_train = pd.read_csv(train)
 
-trainLabel = mnist_train.label
-trained = mnist_train.drop('label',1)
-X_train, X_test, y_train, y_test = model_selection.train_test_split(trained, trainLabel, test_size = 30000, random_state = 42)
-trainLabel = y_train
-trained = X_train
-
-mnist_label = mnist_test.label
-mnist_test = mnist_test.drop('label',1)
+trainLabel = svm_train.label
+trained = svm_train.drop('label',1)
 
 alg_list = []
 fold_size_list = []
@@ -35,8 +27,8 @@ for i in range(0,7):
     print '----------------------------------------------------------------'
     print 'FOLD COUNT: ', 6
 
-    algm = ['euclidean', 'manhattan', 'chebyshev', 'minkowski', 'wminkowski', 'seuclidean','mahalanobis']
-    knnClass = KNeighborsClassifier(metric = algm[i])
+    algm = ['euclidean', 'manhattan', 'chebyshev', 'minkowski']
+    knnClass = KNeighborsClassifier(metric = algm[i], n_jobs = -1)
 
     print 'Distance Metric: ', algm[i]
 
@@ -73,4 +65,4 @@ finalReport = pd.DataFrame(outDat, columns = [
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./knnReport_DistMetric_MNIST.csv',index=False)
+finalReport.to_csv('./reports/knnReport_DistMetric_MNIST.csv',index=False)

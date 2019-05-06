@@ -23,16 +23,16 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-for i in range(0,9):
+for i in range(0,7):
     print '----------------------------------------------------------------'
-    print 'FOLD COUNT: ', 6
+    print 'FOLD COUNT: ', 5
 
-    alph = 1 * 10 ** - (5 + 0.1 * i)
-    nn_mlp = MLPClassifier(solver='lbfgs', alpha= alph)
+    alph = 1 * 10 ** - (8 - 1 * i)
+    nn_mlp = MLPClassifier(alpha = alph)
 
     print 'Alpha: ', alph
 
-    cvEst = cross_validate(nn_mlp, trained, trainLabel, cv = 6, return_train_score = True)
+    cvEst = cross_validate(nn_mlp, trained, trainLabel, cv = 5, return_train_score = True)
 
     print 'Time to train NN', cvEst['fit_time']
 
@@ -65,4 +65,4 @@ finalReport = pd.DataFrame(outDat, columns = [
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./reports/wine/nnReport_alph_Wine.csv',index=False)
+finalReport.to_csv('./reports/wine/nnReport_alph_Wine2.csv',index=False)

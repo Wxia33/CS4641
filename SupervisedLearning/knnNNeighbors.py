@@ -1,5 +1,6 @@
 import time
 import pandas as pd
+import numpy as np
 from sklearn import model_selection
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_validate

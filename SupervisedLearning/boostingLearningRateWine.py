@@ -25,16 +25,16 @@ num_nodes_list = []
 train_score_list = []
 val_score_list = []
 
-for i in range(0,9):
+for i in range(1,20):
     print '----------------------------------------------------------------'
-    print 'FOLD COUNT: ', 6
+    print 'FOLD COUNT: ', 5
 
-    lRate = 0.6 + 0.1 * i
+    lRate = 0.05 * i
     adaBoost = AdaBoostClassifier(learning_rate = lRate)
 
     print 'Coefficient of Polynomial Kernel Function: ', lRate
 
-    cvEst = cross_validate(adaBoost, trained, trainLabel, cv = 6, return_train_score = True)
+    cvEst = cross_validate(adaBoost, trained, trainLabel, cv = 5, return_train_score = True)
 
     print 'Time to train Adaboost', cvEst['fit_time']
 
@@ -44,7 +44,7 @@ for i in range(0,9):
     print 'Testing Score', cvEst['test_score']
 
     lRate_list.append(lRate)
-    fold_size_list.append(6)
+    fold_size_list.append(5)
     time_train_list.append(np.average(cvEst['fit_time']))
     predict_train_list.append(np.average(cvEst['score_time']))
     train_score_list.append(np.average(cvEst['train_score']))
@@ -67,4 +67,4 @@ finalReport = pd.DataFrame(outDat, columns = [
                 'Training Accuracy',
                 'Validation Accuracy'])
 
-finalReport.to_csv('./reports/wine/boostingReport_lRate_Wine.csv',index=False)
+finalReport.to_csv('./reports/wine/boostingReport_lRate_Wine2.csv',index=False)
