@@ -1,7 +1,9 @@
 import pandas as pd
 import time
+import numpy as np
 from sklearn import model_selection
 from sklearn import svm
+from sklearn.model_selection import cross_validate
 
 data = './data/'
 
@@ -22,22 +24,22 @@ train_score_list = []
 val_score_list = []
 
 for i in range(1,9):
-    print '----------------------------------------------------------------'
-    print 'FOLD COUNT: ', 6
+    print('----------------------------------------------------------------')
+    print('FOLD COUNT: ', 5)
 
     deg = i
     svm_class = svm.SVC(kernel = 'poly', degree = deg)
 
-    print 'Degree of Polynomial Kernel Function: ', deg
+    print('Degree of Polynomial Kernel Function: ', deg)
 
-    cvEst = cross_validate(svm_class, trained, trainLabel, cv = 6, return_train_score = True)
+    cvEst = cross_validate(svm_class, trained, trainLabel, cv = 5, return_train_score = True)
 
-    print 'Time to train SVM', cvEst['fit_time']
+    print('Time to train SVM', cvEst['fit_time'])
 
-    print 'Time to Predict with SVM', cvEst['score_time']
+    print('Time to Predict with SVM', cvEst['score_time'])
 
-    print 'Training Score', cvEst['train_score']
-    print 'Testing Score', cvEst['test_score']
+    print('Training Score', cvEst['train_score'])
+    print('Testing Score', cvEst['test_score'])
 
     degree_list.append(deg)
     fold_size_list.append(6)
